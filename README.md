@@ -35,6 +35,12 @@ O script cria a `.venv` com Python 3.12, instala as dependências, baixa
 start.bat
 ```
 
+Para parar:
+
+```bat
+stop.bat
+```
+
 O servidor sobe em `http://127.0.0.1:8020`. Teste:
 
 ```powershell
@@ -94,7 +100,9 @@ o Kokoro usa a voz mapeada — não há clonagem.
 
 - Log: `logs/adapter.log` (inclui `synth=`, `audio=` e `rtf=`)
 - Primeira chamada após o start é mais lenta (warm-up roda em background)
-- Porta ocupada: altere `server.port` em `config.yaml`
+- `WinError 10048` / porta 8020 em uso: rode `stop.bat`. O `start.bat` não abre
+  uma segunda instância; ele avisa e sai sem carregar o modelo.
+- Porta ocupada por outro programa: altere `server.port` em `config.yaml`
 - Firewall: o servidor escuta só em `127.0.0.1`
 
 ## Estrutura
@@ -106,7 +114,9 @@ kokoro-skyrimnet/
 ├── requirements.txt
 ├── setup.ps1/.bat     # venv + deps + modelos
 ├── start.bat
+├── stop.bat
 ├── tools/check_install.py
+├── tools/stop_adapter.ps1
 ├── models/            # baixado no setup (git-ignored)
 └── logs/
 ```

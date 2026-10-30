@@ -18,7 +18,9 @@ import io
 import json
 import logging
 import re
+import socket
 import threading
+import urllib.request
 from contextlib import asynccontextmanager
 import time
 import zlib
@@ -437,13 +439,38 @@ async def tts_to_audio(request: Request) -> Response:
     return Response(content=audio, media_type="audio/wav")
 
 
+def port_open(host: str, port: int) -> bool:
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+        sock.settimeout(0.4)
+        return sock.connect_ex((host, port)) == 0
+
+
+def adapter_alive(host: str, port: int) -> bool:
+    try:
+        with urllib.request.urlopen(
+            f"http://{host}:{port}/health", timeout=1.5
+        ) as response:
+            return response.status == 200
+    except Exception:
+        return False
+
+
 def main() -> None:
-    uvicorn.run(
-        app,
-        host=str(SERVER_CFG.get("host", "127.0.0.1")),
-        port=int(SERVER_CFG.get("port", 8020)),
-        log_level="warning",
-    )
+    host = str(SERVER_CFG.get("host", "127.0.0.1"))
+    port = int(SERVER_CFG.get("port", 8020))
+    probe_host = "127.0.0.1" if host in {"0.0.0.0", "::"} else host
+
+    # Fail fast instead of loading the 325 MB model and then hitting WinError 10048.
+    if port_open(probe_host, port):
+        if adapter_alive(probe_host, port):
+            print(f"Adapter already running at http://{probe_host}:{port}")
+            print("Use stop.bat before starting another instance.")
+            return
+        print(f"Port {port} is already in use by another program.")
+        print("Close it or change server.port in config.yaml, then try again.")
+        raise SystemExit(1)
+
+    uvicorn.run(app, host=host, port=port, log_level="warning")
 
 
 if __name__ == "__main__":
