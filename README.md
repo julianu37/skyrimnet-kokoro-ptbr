@@ -64,6 +64,7 @@ estável:
 | player | `pm_alex` |
 | feminino | `pf_dora` |
 | masculino | `pm_alex` ou `pm_santa` (hash estável) |
+| desconhecido | `pf_dora` (não adivinha gênero) |
 
 Como pt-BR tem só 3 vozes, o adapter aplica uma variação determinística de
 velocidade (`speed_jitter`) por NPC. Para timbre, use o sistema de **Voice

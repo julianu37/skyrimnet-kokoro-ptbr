@@ -231,8 +231,14 @@ def pick_voice(speaker: str) -> str:
     if key in {"player", "player_special", "prisoner"}:
         return TTS_CFG["player_voice"]
 
-    female = "female" in key or key.startswith("fem")
-    pool = TTS_CFG["female_voices"] if female else TTS_CFG["male_voices"]
+    if "female" in key or key.startswith("fem"):
+        pool = TTS_CFG["female_voices"]
+    elif "male" in key:
+        pool = TTS_CFG["male_voices"]
+    else:
+        # Unknown speaker key (for example an NPC name): use the neutral
+        # default instead of guessing a gender.
+        return TTS_CFG["default_voice"]
     if not pool:
         return TTS_CFG["default_voice"]
     if len(pool) == 1:
