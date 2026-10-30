@@ -1,0 +1,35 @@
+server:
+  host: 127.0.0.1
+  port: 8020
+
+tts:
+  # Kokoro language code used for every request (espeak-ng: pt-br).
+  language: pt-br
+  # Keep true for a fully Brazilian Portuguese playthrough. Set false to honor
+  # the language SkyrimNet sends per request.
+  force_language: true
+
+  speed: 1.02
+  # Small deterministic speed variation per speaker, so NPCs sharing a voice
+  # do not sound identical. 0 disables it.
+  speed_jitter: 0.03
+
+  default_voice: pf_dora
+  narrator_voice: pf_dora
+  player_voice: pm_alex
+
+  # Kokoro v1.0 Brazilian Portuguese voices.
+  # female: pf_dora | male: pm_alex, pm_santa
+  female_voices: [pf_dora]
+  male_voices: [pm_alex, pm_santa]
+
+  cache_size: 512
+  save_reference_audio: false
+
+# Explicit per-speaker overrides. Keys are normalized speaker names
+# (lowercase, non-alphanumerics -> "_"). Examples:
+#   male_nord: pm_alex
+#   female_elf: pf_dora
+#   narrator: pf_dora
+#   player: pm_alex
+overrides: {}
